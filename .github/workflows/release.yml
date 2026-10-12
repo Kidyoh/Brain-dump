@@ -1,0 +1,73 @@
+name: Release
+
+# Builds the Android APKs and publishes them as a GitHub release. Runs when a
+# version tag such as v1.0.0 is pushed, or by hand from the Actions tab: the
+# run then creates the tag on the commit it built.
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag, e.g. v1.0.0 (created if it doesn't exist)
+        required: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.event.inputs.tag || github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      TAG: ${{ github.event.inputs.tag || github.ref_name }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.47.7
+          cache: true
+
+      - name: Get packages
+        run: flutter pub get
+
+      - name: Analyze and test
+        run: |
+          flutter analyze
+          flutter test
+
+      - name: Build APKs
+        run: |
+          flutter build apk --release --split-per-abi
+          flutter build apk --release
+
+      - name: Collect release files
+        run: |
+          mkdir -p dist
+          v="${TAG#v}"
+          apk=build/app/outputs/flutter-apk
+          cp "$apk/app-arm64-v8a-release.apk"   "dist/BrainDump-$v-arm64.apk"
+          cp "$apk/app-armeabi-v7a-release.apk" "dist/BrainDump-$v-armv7-older-phones.apk"
+          cp "$apk/app-x86_64-release.apk"      "dist/BrainDump-$v-x86_64-emulators.apk"
+          cp "$apk/app-release.apk"             "dist/BrainDump-$v-universal.apk"
+          ls -la dist
+
+      - name: Publish the release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.TAG }}
+          target_commitish: ${{ github.sha }}
+          name: Brain Dump ${{ env.TAG }}
+          body_path: docs/releases/${{ env.TAG }}.md
+          files: dist/*
+          fail_on_unmatched_files: true
