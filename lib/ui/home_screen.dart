@@ -400,7 +400,7 @@ class _InboxState extends State<_Inbox> {
     return ListenableBuilder(
       listenable: store,
       builder: (context, _) {
-        final now = DateTime.now();
+        final now = appClock();
         final open = store.openItems.toList();
         final done = store.items.where((i) => i.done).toList();
         final upNext = _filter == null

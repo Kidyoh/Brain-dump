@@ -55,7 +55,7 @@ class _ItemSheetState extends State<_ItemSheet> {
 
   Future<void> _pickWhen() async {
     final picked = await ItemActions(context)
-        .pickDateTime(ItemActions.suggestedTime(item, DateTime.now()));
+        .pickDateTime(ItemActions.suggestedTime(item, appClock()));
     if (picked == null || !mounted) return;
     setState(() {
       item.due = picked;
@@ -171,7 +171,7 @@ class _ItemSheetState extends State<_ItemSheet> {
                     Expanded(
                       child: Text(
                         'From your ${dump.seconds > 0 ? '${dump.seconds}-second dump' : 'typed dump'}, '
-                        '${dayLabel(dump.createdAt, DateTime.now()).toLowerCase()} at ${clock(dump.createdAt)}',
+                        '${dayLabel(dump.createdAt, appClock()).toLowerCase()} at ${clock(dump.createdAt)}',
                         style: p.sans(12.5, color: p.faint),
                       ),
                     )

@@ -41,7 +41,7 @@ class ItemActions {
   }
 
   Future<DateTime?> pickDateTime(DateTime initial) async {
-    final now = DateTime.now();
+    final now = appClock();
     final date = await showDatePicker(
       context: context,
       initialDate: initial,
@@ -58,7 +58,7 @@ class ItemActions {
   }
 
   Future<void> addToCalendar(Item item) async {
-    final start = item.due ?? suggestedTime(item, DateTime.now());
+    final start = item.due ?? suggestedTime(item, appClock());
     final event = Event(
       title: item.text,
       description: item.details,
@@ -86,12 +86,12 @@ class ItemActions {
 
   /// Sets a reminder at the item's time, or asks for one if it has none.
   Future<void> setReminder(Item item, {bool pick = false}) async {
-    final now = DateTime.now();
+    final now = appClock();
     var at = item.due;
     if (pick || at == null || item.allDay || !at.isAfter(now)) {
       at = await pickDateTime(suggestedTime(item, now));
       if (at == null) return;
-      if (!at.isAfter(DateTime.now())) {
+      if (!at.isAfter(appClock())) {
         _say('That time has already passed.');
         return;
       }
@@ -140,7 +140,7 @@ class ItemActions {
     await store.changed();
     _say(
       'Reminder cancelled.',
-      action: was == null || !was.isAfter(DateTime.now())
+      action: was == null || !was.isAfter(appClock())
           ? null
           : SnackBarAction(
               label: 'Undo',
