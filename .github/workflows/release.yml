@@ -1,8 +1,9 @@
 name: Release
 
-# Builds the Android APKs and publishes them as a GitHub release. Runs when a
-# version tag such as v1.0.0 is pushed, or by hand from the Actions tab: the
-# run then creates the tag on the commit it built.
+# Builds the signed Android APKs and the Play Store App Bundle, then publishes
+# them as a GitHub release. Runs when a version tag such as v1.0.0 is pushed,
+# or by hand from the Actions tab: the run then creates the tag on the commit
+# it built.
 on:
   push:
     tags: ['v*']
@@ -46,10 +47,23 @@ jobs:
           flutter analyze
           flutter test
 
-      - name: Build APKs
+      - name: Restore the upload key
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          [ -n "$KEYSTORE_BASE64" ] || { echo "::error::The ANDROID_KEYSTORE_BASE64 secret is missing. See RELEASING.md."; exit 1; }
+          echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/upload.jks"
+          echo "ANDROID_KEYSTORE_PATH=$RUNNER_TEMP/upload.jks" >> "$GITHUB_ENV"
+
+      - name: Build APKs and the App Bundle
+        env:
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
           flutter build apk --release --split-per-abi
           flutter build apk --release
+          flutter build appbundle --release
 
       - name: Collect release files
         run: |
@@ -60,7 +74,17 @@ jobs:
           cp "$apk/app-armeabi-v7a-release.apk" "dist/BrainDump-$v-armv7-older-phones.apk"
           cp "$apk/app-x86_64-release.apk"      "dist/BrainDump-$v-x86_64-emulators.apk"
           cp "$apk/app-release.apk"             "dist/BrainDump-$v-universal.apk"
+          cp build/app/outputs/bundle/release/app-release.aab "dist/BrainDump-$v-play.aab"
           ls -la dist
+
+      - name: Check the release key signed the builds
+        run: |
+          apksigner=$(ls "$ANDROID_HOME"/build-tools/*/apksigner | sort -V | tail -1)
+          "$apksigner" verify --print-certs "dist/BrainDump-${TAG#v}-universal.apk" | tee certs.txt
+          keytool -printcert -jarfile "dist/BrainDump-${TAG#v}-play.aab" | tee -a certs.txt
+          if grep -q "CN=Android Debug" certs.txt; then
+            echo "::error::A build is signed with the debug key."; exit 1
+          fi
 
       - name: Publish the release
         uses: softprops/action-gh-release@v2

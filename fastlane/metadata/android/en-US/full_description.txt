@@ -1,0 +1,21 @@
+Say everything on your mind at once. Brain Dump sorts it out.
+
+Hold the button and ramble: the errand you keep forgetting, the meeting on Thursday, the podcast idea, the wifi password. Let go, and it comes back as tasks, reminders, notes and ideas, each with a one-tap action.
+
+HOW IT WORKS
+• Hold and talk for up to 30 seconds. Your words appear as you speak.
+• Brain Dump sorts it into tasks, reminders, notes and ideas.
+• Times like "Thursday", "tomorrow at five thirty" or "in 20 minutes" are worked out for you.
+• One tap to act: add to your calendar, set a reminder, copy or share.
+
+STAYS ORGANISED
+• An inbox of open items, grouped by kind
+• "Up next" shows what's coming
+• A history of every past dump
+• Type instead of talking whenever you like
+• Light and dark themes
+
+WORKS OFFLINE, AI IS OPTIONAL
+Out of the box, Brain Dump uses your phone's own speech recognition and sorts with built-in rules, with no account and no internet. If you want it smarter with messy rambles, add your own OpenAI or Claude API key. Keys are kept in your phone's secure storage, and your words only go to the service you picked.
+
+No account, no ads, no tracking.

@@ -98,12 +98,13 @@ flutter build apk --release
 # -> build/app/outputs/flutter-apk/app-release.apk
 ```
 
-The release build is signed with the debug key, which is fine for installing
-it yourself. Publishing to the Play Store needs your own signing key.
+Without a release key the build is signed with the debug key, which is fine
+for installing it yourself. With one (see [RELEASING.md](RELEASING.md)) it can
+go to Google Play.
 
 Pushing a tag such as `v1.0.0` (or starting the **Release** workflow by hand)
-builds the APKs and publishes a GitHub release with notes from
-`docs/releases/<tag>.md`.
+builds signed APKs and the Play Store App Bundle and publishes a GitHub
+release with notes from `docs/releases/<tag>.md`.
 
 ### Permissions
 
