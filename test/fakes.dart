@@ -3,6 +3,7 @@ import 'package:brain_dump/capture/capture.dart';
 import 'package:brain_dump/capture/voice.dart';
 import 'package:brain_dump/data/settings.dart';
 import 'package:brain_dump/data/store.dart';
+import 'package:brain_dump/data/when.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -68,6 +69,9 @@ class Fixture {
     final store = DumpStore(p)..load();
     final voice = FakeVoice();
     final clock = FakeClock(now ?? DateTime(2026, 10, 12, 13));
+    // The screens read the same clock, so "Tomorrow" means the same day to
+    // the sorter and to the labels, whatever day the tests run.
+    appClock = clock.call;
     final capture = CaptureController(
       settings: settings,
       store: store,

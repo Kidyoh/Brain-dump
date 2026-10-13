@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'when.dart';
+
 /// What a piece of a ramble turned out to be.
 enum Kind {
   task('Task', 'Tasks', Icons.check_circle_outline_rounded),
@@ -53,8 +55,7 @@ class Item {
   int? notificationId;
   bool inCalendar;
 
-  bool get hasReminder =>
-      reminderAt != null && reminderAt!.isAfter(DateTime.now());
+  bool get hasReminder => reminderAt != null && reminderAt!.isAfter(appClock());
 
   Map<String, Object?> toJson() => {
     'id': id,

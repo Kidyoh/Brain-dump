@@ -53,7 +53,7 @@ class ResultsScreen extends StatelessWidget {
                           ? dump.seconds > 0
                                 ? '${dump.seconds} seconds, sorted'
                                 : 'Sorted'
-                          : '${dayLabel(dump.createdAt, DateTime.now())}, ${clock(dump.createdAt)}',
+                          : '${dayLabel(dump.createdAt, appClock())}, ${clock(dump.createdAt)}',
                       style: p.sans(13.5, color: p.faint),
                     ),
                     const SizedBox(height: 2),

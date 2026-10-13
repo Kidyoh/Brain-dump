@@ -1,6 +1,10 @@
 // Dates and times: reading them out of spoken English for the built-in
 // sorter, reading the AI's ISO strings, and writing them for people.
 
+/// The current time, for everything the screens show and decide. Tests pin
+/// it so that labels like "Tomorrow" don't depend on the day they run.
+DateTime Function() appClock = DateTime.now;
+
 /// A date found in a phrase, and the phrase with it taken out.
 class FoundWhen {
   const FoundWhen(this.when, this.allDay, this.rest);
@@ -251,6 +255,6 @@ String dayLabel(DateTime d, DateTime now) {
 
 /// "Tomorrow, 5:30 PM" or "Thursday".
 String whenLabel(DateTime d, {bool allDay = false, DateTime? now}) {
-  final day = dayLabel(d, now ?? DateTime.now());
+  final day = dayLabel(d, now ?? appClock());
   return allDay ? day : '$day, ${clock(d)}';
 }
